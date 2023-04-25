@@ -1,0 +1,10 @@
+{% extends 'farm/base.html' %}
+
+{% block body %}
+<form method="POST">
+    {% csrf_token %}
+    {{ form }}
+    <br />
+    <button type="submit">Sign Up</button>
+</form>
+{% endblock %}

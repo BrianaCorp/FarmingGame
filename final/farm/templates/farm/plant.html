@@ -1,0 +1,50 @@
+{% extends 'farm/base.html' %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Plot</title>
+</head>
+<body>
+{% block body %}
+    <h1>Pick a plot to plant a {{ plant_type }} in</h1>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <a href="{% url 'plot' %}" class="btn btn-success">Cancel planting</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            {% for plot in plots %}
+                {% if plot.plot_growth > 0 %}
+                    <img src="{{ plot.plot_image.url }}" class="img-fluid"/>
+                {% else %}
+                    <a href="{% url 'confirmplant' id=plot.id plant_type=plant_type %}"><img src="{{ plot.plot_image.url }}" class="img-fluid"/></a>
+                {% endif %}
+                {% if forloop.counter == 3 or forloop.counter == 6 %}
+                    <br />
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="col-md-4">
+        <h2>Plant something else</h2>
+            {% for item in items %}
+                <div class="card">
+                    <div class="card-body">
+                        <img src="{{ item.item.item_image.url }}" /><br />
+                        {{ item.item.item_name }}<br />
+                        Quantity: {{ item.item_quantity }}<br />
+                        <a href="{% url 'plant' item.item.plant_type %}" class="btn btn-success">Plant Seed</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+</body>
+</html>

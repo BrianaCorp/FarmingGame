@@ -1,0 +1,9 @@
+{% extends 'farm/base.html' %}
+{% block body %}
+    How many {{ item.item.item_name }} would you like to sell? You have {{ amount }}. <br /><br />
+    <form method="POST">
+        {% csrf_token %}
+        <input type="number" name="quantity" required/><br /><br />
+    <button type="submit">Sell</button>
+    </form>
+{% endblock %}

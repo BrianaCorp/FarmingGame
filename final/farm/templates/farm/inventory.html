@@ -1,0 +1,34 @@
+{% extends 'farm/base.html' %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Inventory</title>
+</head>
+<body>
+{% block body %}
+    <h1>{{ user.username }}'s Inventory</h1>
+    <div class="card-columns">
+    {% for item in inventory %}
+            <div class="card">
+                <div class="card-body">
+                    <img src="{{ item.item.item_image.url }}" /><br />
+                    {{ item.item.item_name }}<br />
+                    Quantity: {{ item.item_quantity }}
+                    {% if item.item.item_type == 'Seeds' %}
+                        <br />
+                        <a href="{% url 'plant' item.item.plant_type %}" class="btn btn-success">Plant Seed</a>
+                    {% elif item.item.item_type == 'Harvests' %}
+                        <br />
+                        <a href="{% url 'sell' item.id %}" class="btn btn-success">Sell</a>
+                    {% endif %}
+                </div>
+            </div>
+    {% endfor %}
+    </div>
+{% endblock %}
+</body>
+</html>

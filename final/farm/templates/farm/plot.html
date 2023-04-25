@@ -1,0 +1,109 @@
+{% extends 'farm/base.html' %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Plot</title>
+</head>
+<body>
+{% block body %}
+    <script>
+        let endTime = 0;
+        let now = 0;
+        let timeleft = 0;
+        let seconds = 0;
+        let minutes = 0;
+
+        function growthTimer() {
+            {% for plot in plots %}
+                endTime = new Date({{ plot.growth_time|date:"U" }} * 1000);
+                endTime = endTime.getTime();
+
+                now = new Date();
+                now = now.getTime();
+
+                timeleft = endTime - now;
+
+                minutes = Math.floor((timeleft % (1000 * 60 * 60)) / (1000 * 60));
+                seconds = Math.floor((timeleft % (1000 * 60)) / 1000);
+
+                $("#timer-" + "{{ plot.id }}").html(minutes + "m" + seconds + "s");
+            {% endfor %}
+        }
+
+        function waterTimer() {
+            {% for plot in plots %}
+                endTime = new Date({{ plot.water_time|date:"U" }} * 1000);
+                endTime = endTime.getTime();
+
+                now = new Date();
+                now = now.getTime();
+
+                timeleft = endTime - now;
+
+                minutes = Math.floor((timeleft % (1000 * 60 * 60)) / (1000 * 60));
+                seconds = Math.floor((timeleft % (1000 * 60)) / 1000);
+
+                $("#water-" + "{{ plot.id }}").html(minutes + "m" + seconds + "s");
+            {% endfor %}
+        }
+
+        setInterval(function() { growthTimer(); }, 1000);
+        setInterval(function() { waterTimer(); }, 1000);
+    </script>
+    <h1>{{ user.username }}'s Plot</h1>
+    <div class="row">
+        <div class="col-md-3">
+            {% for plot in plots %}
+                <div class="card">
+                    <div class="card-body">
+                        Plot number {{ forloop.counter }}<br />
+                        {% if plot.plot_growth > 0 and plot.plot_growth < 3%}
+                            Growth time left:<br />
+                            <span id="timer-{{ plot.id }}"></span>
+                        {% elif plot.plot_growth == 3 %}
+                            Ready to harvest
+                        {% else %}
+                            No plant
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="col-md-5">
+            {% for plot in plots %}
+                {% if plot.plot_growth == 3 %}
+                    <a href="{% url 'harvest' plot.id %}"><img src="{{ plot.plot_image.url }}" class="img-fluid"/></a>
+                {% elif plot.plot_growth > 0%}
+                    {% if plot.plot_watered == False %}
+                        <a href="{% url 'water' plot.id %}"><img src="{{ plot.plot_image.url }}" class="img-fluid"/></a>
+                    {% else %}
+                        <div class="watered">
+                            <img src="{{ plot.plot_image.url }}" class="img-fluid"/>
+                            <div class="watered-text">Next water time:<br /><span id="water-{{ plot.id }}"></span></div>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <img src="{{ plot.plot_image.url }}" class="img-fluid"/>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="col-md-4">
+            {% for item in items %}
+                <div class="card">
+                    <div class="card-body">
+                        <img src="{{ item.item.item_image.url }}" /><br />
+                        {{ item.item.item_name }}<br />
+                        Quantity: {{ item.item_quantity }}<br />
+                        <a href="{% url 'plant' item.item.plant_type %}" class="btn btn-success">Plant Seed</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+</body>
+</html>
